@@ -81,7 +81,7 @@ async function run() {
         const foods = await addedFoodCollection
           .find({})
           .sort({ expiryDate: 1 })
-          .limit(6)
+          .limit(8)
           .toArray();
 
         res.json(foods);
