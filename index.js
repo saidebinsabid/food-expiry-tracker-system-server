@@ -77,21 +77,29 @@ async function run() {
     });
 
     app.get("/nearly-expired-foods", async (req, res) => {
-      try {
-        const foods = await addedFoodCollection
-          .find({})
-          .sort({ expiryDate: 1 })
-          .limit(8)
-          .toArray();
+  try {
+    const now = new Date();
+    const oneYearFromNow = new Date();
+    oneYearFromNow.setFullYear(now.getFullYear() + 2);
 
-        res.json(foods);
-      } catch (error) {
-        console.error(error);
-        res
-          .status(500)
-          .json({ message: "Error fetching nearly expired foods" });
-      }
-    });
+    const foods = await addedFoodCollection
+      .find({
+        expiryDate: {
+          $gte: now,           
+          $lte: oneYearFromNow 
+        }
+      })
+      .sort({ expiryDate: 1 })
+      .limit(6)
+      .toArray();
+
+    res.json(foods);
+  } catch (error) {
+    // console.error(error);
+    res.status(500).json({ message: "Error fetching nearly expired foods" });
+  }
+});
+
 
     app.get("/expired-food-items", async (req, res) => {
       const today = new Date();
